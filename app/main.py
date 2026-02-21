@@ -26,3 +26,20 @@ df['price_clean'] = pd.to_numeric(df['price'].replace('free', '0'), errors='coer
 # errors='coerce' gör att ogiltiga datum blir NaN
 df['date_clean'] = pd.to_datetime(df['created_at'], errors='coerce')
 
+# Här flaggar vi olika problem
+df['negativt_pris'] = df['price_clean'] < 0                    # Pris mindre än 0
+df['fel_datum'] = df['date_clean'].isna()                      # Datum som är ogiltiga
+df['saknar_id'] = df['id'].isna()                              # Produkter utan ID
+df['saknar_namn'] = df['name'].isna()                          # Produkter utan namn
+
+# Här markerar vi vilka rader som ska tas bort
+df['ta_bort'] = df['negativt_pris'] | df['fel_datum'] | df['saknar_id'] | df['saknar_namn']
+
+# Här behåller vi bara rader som INTE ska tas bort
+bra_data = df[df['ta_bort'] == False].copy()
+
+# Här räknar vi ut statistiken från den rena datan
+snittpris = bra_data['price_clean'].mean()                     # Medelvärdet av alla priser
+medianpris = bra_data['price_clean'].median()                  # Medianpriset
+antal_produkter = len(bra_data)                                # Hur många produkter vi har kvar
+antal_saknat_pris = bra_data['price_clean'].isna().sum()       # Hur många som saknar pris
