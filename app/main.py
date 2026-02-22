@@ -43,3 +43,20 @@ snittpris = bra_data['price_clean'].mean()                     # Medelvärdet av
 medianpris = bra_data['price_clean'].median()                  # Medianpriset
 antal_produkter = len(bra_data)                                # Hur många produkter vi har kvar
 antal_saknat_pris = bra_data['price_clean'].isna().sum()       # Hur många som saknar pris
+
+
+# Hör skapar vi en dictionary med all information
+summary_data = {
+    'variabel': ['snittpris', 'medianpris', 'antal produkter', 'antal produkter med saknat pris'],
+    'värde': [
+        round(snittpris, 2) if pd.notna(snittpris) else 0,     # Avrunda till 2 decimaler
+        round(medianpris, 2) if pd.notna(medianpris) else 0,   # Avrunda till 2 decimaler
+        antal_produkter,                                        # Antal produkter (heltal)
+        antal_saknat_pris                                       # Antql utan pris (heltal)
+    ]
+}
+
+# Gör om till DataFrame och spara som CSV
+pd.DataFrame(summary_data).to_csv('analytics_summary.csv', index=False)
+
+print("analytics_summary.csv har skapats ")
